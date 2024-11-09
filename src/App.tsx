@@ -1,5 +1,4 @@
-
-import { ChatBot } from './components/ChatBot'
+import ChatWidget from "@/components/ChatWidget.tsx";
 
 import './App.css'
 
@@ -8,7 +7,7 @@ function App() {
 
   return (
     <>
-    <ChatBot/>
+    <ChatWidget/>
     </>
   )
 }
