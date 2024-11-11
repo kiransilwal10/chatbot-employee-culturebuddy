@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { Send } from "lucide-react";
 import BotAvatar from '@/assets/chatbot.jpg';
 import UserAvatar from '@/assets/user.jpg';
+import MessageLoading from "@/components/ui/chat/message-loading.tsx";
+import InviteCards from "@/components/InviteCard.tsx";
 
 interface Message {
     text: string;
@@ -42,8 +44,9 @@ export default function ChatWidget() {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(-1);
     const [isQuestionnaireDone, setIsQuestionnaireDone] = useState<boolean>(false);
     const [questionnaireAnswers, setQuestionnaireAnswers] = useState<QuestionnaireAnswer[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [hasStartedQuestionnaire, setHasStartedQuestionnaire] = useState<boolean>(false);
 
-    // Create a ref for the end of the message list
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -51,43 +54,58 @@ export default function ChatWidget() {
     };
 
     useEffect(() => {
-        // Scroll to the bottom whenever messages change
         scrollToBottom();
-    }, [messages]);
+    }, [messages, isLoading]);
 
     const askNextQuestion = () => {
         const nextIndex = currentQuestionIndex + 1;
         if (nextIndex < initialQuestions.length) {
-            setMessages(prevMessages => [
-                ...prevMessages,
-                { text: initialQuestions[nextIndex], sender: 'bot' }
-            ]);
-            setCurrentQuestionIndex(nextIndex);
+            setIsLoading(true);
+            setTimeout(() => {
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    { text: initialQuestions[nextIndex], sender: 'bot' }
+                ]);
+                setCurrentQuestionIndex(nextIndex);
+                setIsLoading(false);
+            }, 1000);
         } else {
-            setMessages(prevMessages => [
-                ...prevMessages,
-                { text: "Thank you so much for sharing! I feel like I know you better now. How can I assist you today?", sender: 'bot' }
-            ]);
-            setIsQuestionnaireDone(true);
-            console.log("Questionnaire Answers:", questionnaireAnswers);
+            setIsLoading(true);
+            setTimeout(() => {
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    { text: "Thank you so much for sharing! I feel like I know you better now. How can I assist you today?", sender: 'bot' }
+                ]);
+                setIsQuestionnaireDone(true);
+                setIsLoading(false);
+                console.log("Questionnaire Answers:", questionnaireAnswers);
+            }, 1000);
         }
     };
 
     const handleClick = () => {
         if (inputValue.trim()) {
             setMessages([...messages, { text: inputValue, sender: 'user' }]);
+
             if (!isQuestionnaireDone) {
-                setQuestionnaireAnswers(prevAnswers => [
-                    ...prevAnswers,
-                    { question: initialQuestions[currentQuestionIndex], answer: inputValue }
-                ]);
-                setTimeout(askNextQuestion, 1000);
+                if (!hasStartedQuestionnaire) {
+                    setHasStartedQuestionnaire(true);
+                    askNextQuestion();
+                } else {
+                    setQuestionnaireAnswers(prevAnswers => [
+                        ...prevAnswers,
+                        { question: initialQuestions[currentQuestionIndex], answer: inputValue }
+                    ]);
+                    setTimeout(askNextQuestion, 500);
+                }
             } else {
+                setIsLoading(true);
                 setTimeout(() => {
                     setMessages(prevMessages => [
                         ...prevMessages,
                         { text: 'Thank you for your message! I\'ll get back to you shortly.', sender: 'bot' }
                     ]);
+                    setIsLoading(false);
                 }, 1500);
             }
             setInputValue('');
@@ -98,16 +116,21 @@ export default function ChatWidget() {
         setInputValue(event.target.value);
     };
 
-    useEffect(() => {
-        // Trigger the first question after the welcome message
-        setTimeout(askNextQuestion, 1000);
-    }, []);
-
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault(); // Prevents adding a new line
-            handleClick(); // Sends the message
+            event.preventDefault();
+            handleClick();
         }
+    };
+
+    const handleNewChat = () => {
+        setMessages([]);
+        setInputValue('');
+        setCurrentQuestionIndex(-1);
+        setIsQuestionnaireDone(false);
+        setQuestionnaireAnswers([]);
+        setIsLoading(false);
+        setHasStartedQuestionnaire(false);
     };
 
     return (
@@ -116,8 +139,7 @@ export default function ChatWidget() {
                 <h1 className="text-xl font-semibold">Chat with Chance ✨</h1>
                 <p>Ask any question for Chance to Answer</p>
                 <div className="flex gap-2 items-center pt-2">
-                    <Button variant="secondary">New Chat</Button>
-                    <Button variant="secondary">See FAQ</Button>
+                    <Button variant="secondary" onClick={handleNewChat}>New Chat</Button>
                 </div>
             </ExpandableChatHeader>
             <ExpandableChatBody>
@@ -133,10 +155,18 @@ export default function ChatWidget() {
                             />
                             <ChatBubbleMessage>
                                 {message.text}
+
                             </ChatBubbleMessage>
                         </ChatBubble>
                     ))}
-                    {/* Add a div at the end to serve as a scroll target */}
+                    {isLoading && (
+                        <ChatBubble variant="received">
+                            <ChatBubbleAvatar src={BotAvatar} fallback="Bot" />
+                            <ChatBubbleMessage>
+                                <MessageLoading />
+                            </ChatBubbleMessage>
+                        </ChatBubble>
+                    )}
                     <div ref={messagesEndRef} />
                 </ChatMessageList>
             </ExpandableChatBody>
@@ -145,7 +175,7 @@ export default function ChatWidget() {
                     <ChatInput
                         value={inputValue}
                         onChange={handleInputChange}
-                        onKeyDown={handleKeyDown} // Add this line
+                        onKeyDown={handleKeyDown}
                         placeholder={isQuestionnaireDone ? "Type your message..." : "Type your answer..."}
                         className="flex-grow rounded-full border border-gray-300 px-4 py-3 text-left align-left focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
