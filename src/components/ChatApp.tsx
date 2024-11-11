@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
+import ChatWidget from './ChatWidget'
 type Message = {
     id: number
     text: string
@@ -203,17 +203,23 @@ export default function ChatApp() {
                                         value={inputMessage}
                                         onChange={(e) => setInputMessage(e.target.value)}
                                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                        placeholder="Type a message"
                                     />
                                     <Button onClick={handleSendMessage}>Send</Button>
                                 </div>
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex items-center justify-center">
-                            <h2 className="text-xl font-semibold">Select a contact to start chatting</h2>
+                        <div className="flex items-center justify-center flex-1">
+                            <p className="text-muted-foreground">Select a contact to start chatting</p>
                         </div>
                     )}
                 </div>
+            </div>
+
+            {/* ChatWidget positioned at the bottom right */}
+            <div className="fixed bottom-4 right-4 z-10">
+                <ChatWidget />
             </div>
         </>
     )

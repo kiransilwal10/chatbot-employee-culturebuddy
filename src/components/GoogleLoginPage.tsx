@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './ui/firebaseConfig';
-import { gapi } from 'gapi-script';  // Google API client library
 
 export default function GoogleLoginPage() {
   const navigate = useNavigate();
@@ -12,22 +11,6 @@ export default function GoogleLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [events, setEvents] = useState([]);
-
-  // Load Google API client on component mount
-  useEffect(() => {
-    const loadGapiClient = () => {
-      gapi.load('client:auth2', () => {
-        gapi.client.init({
-          apiKey: 'AIzaSyBi7B73JeNOJqd-5tx8nEVw9YIWu1CeNu4',  // Replace with your actual API key
-          clientId: '1041243581594-ha6qrorlov1qemku6nfj5ofhssvji1r1.apps.googleusercontent.com',  // Replace with your client ID
-          scope: 'https://www.googleapis.com/auth/calendar.readonly',
-          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-        });
-      });
-    };
-    loadGapiClient();
-  }, []);
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -35,31 +18,10 @@ export default function GoogleLoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log('Google sign-in successful', user);
-      
-      // After sign-in, authenticate with the Google API
-      gapi.auth2.getAuthInstance().signIn().then(() => {
-        fetchGoogleCalendarEvents();  // Fetch calendar events after successful sign-in
-      });
-      navigate('/calendar');  // Redirect to calendar page
+      navigate('/chat'); // Redirect to chat app after Google sign-in
     } catch (error) {
       console.error("Error signing in with Google:", error);
       setError("Failed to sign in with Google");
-    }
-  };
-
-  const fetchGoogleCalendarEvents = async () => {
-    try {
-      const response = await gapi.client.calendar.events.list({
-        calendarId: 'primary',
-        timeMin: new Date().toISOString(),
-        showDeleted: false,
-        singleEvents: true,
-        orderBy: 'startTime',
-      });
-      setEvents(response.result.items);  // Set calendar events in state
-    } catch (error) {
-      console.error("Error fetching Google Calendar events:", error);
-      setError("Failed to fetch calendar events");
     }
   };
 
@@ -67,7 +29,7 @@ export default function GoogleLoginPage() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/chat');
+      navigate('/chat'); // Redirect to chat app after email sign-in
     } catch (error) {
       console.error("Error signing in with email:", error);
       setError("Invalid email or password");
@@ -131,23 +93,6 @@ export default function GoogleLoginPage() {
         {/* Right Side: Image or Illustration */}
         <div className="hidden md:block w-1/2 h-full bg-cover bg-center" style={{ backgroundImage: 'url(https://via.placeholder.com/600)' }}></div>
 
-      </div>
-
-      {/* Display Google Calendar events */}
-      <div className="p-6">
-        <h2 className="text-2xl font-bold">Upcoming Calendar Events</h2>
-        <ul>
-          {events.length === 0 ? (
-            <p>No events found.</p>
-          ) : (
-            events.map((event, index) => (
-              <li key={index} className="border-b py-2">
-                <strong>{event.summary}</strong>
-                <p>{new Date(event.start.dateTime || event.start.date).toLocaleString()}</p>
-              </li>
-            ))
-          )}
-        </ul>
       </div>
     </div>
   );
