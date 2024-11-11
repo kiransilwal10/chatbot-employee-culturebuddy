@@ -2,8 +2,11 @@
 
 // Inspired by react-hot-toast library
 import * as React from "react"
-import type { ToastProps } from "react-bootstrap"
-import type { ToastActionElement } from "../components/Layout/ui/toast"
+
+import type {
+  ToastActionElement,
+  ToastProps,
+} from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -149,7 +152,17 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
- 
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
+  })
 
   return {
     id: id,
