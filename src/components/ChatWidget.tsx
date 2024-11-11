@@ -17,6 +17,7 @@ import { Send } from "lucide-react";
 import BotAvatar from '@/assets/chatbot.jpg';
 import UserAvatar from '@/assets/user.jpg';
 import MessageLoading from "@/components/ui/chat/message-loading.tsx";
+import InviteCards from "@/components/InviteCard.tsx";
 
 interface Message {
     text: string;
@@ -44,15 +45,14 @@ export default function ChatWidget() {
     const [isQuestionnaireDone, setIsQuestionnaireDone] = useState<boolean>(false);
     const [questionnaireAnswers, setQuestionnaireAnswers] = useState<QuestionnaireAnswer[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [hasStartedQuestionnaire, setHasStartedQuestionnaire] = useState<boolean>(false);
 
-    // Create a ref for the end of the message list
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Scroll to bottom whenever messages change or loading state is updated
     useEffect(() => {
         scrollToBottom();
     }, [messages, isLoading]);
@@ -60,14 +60,14 @@ export default function ChatWidget() {
     const askNextQuestion = () => {
         const nextIndex = currentQuestionIndex + 1;
         if (nextIndex < initialQuestions.length) {
-            setIsLoading(true); // Set loading state to true before showing the bot message
+            setIsLoading(true);
             setTimeout(() => {
                 setMessages(prevMessages => [
                     ...prevMessages,
                     { text: initialQuestions[nextIndex], sender: 'bot' }
                 ]);
                 setCurrentQuestionIndex(nextIndex);
-                setIsLoading(false); // Reset loading state after message is sent
+                setIsLoading(false);
             }, 1000);
         } else {
             setIsLoading(true);
@@ -86,12 +86,18 @@ export default function ChatWidget() {
     const handleClick = () => {
         if (inputValue.trim()) {
             setMessages([...messages, { text: inputValue, sender: 'user' }]);
+
             if (!isQuestionnaireDone) {
-                setQuestionnaireAnswers(prevAnswers => [
-                    ...prevAnswers,
-                    { question: initialQuestions[currentQuestionIndex], answer: inputValue }
-                ]);
-                setTimeout(askNextQuestion, 500);
+                if (!hasStartedQuestionnaire) {
+                    setHasStartedQuestionnaire(true);
+                    askNextQuestion();
+                } else {
+                    setQuestionnaireAnswers(prevAnswers => [
+                        ...prevAnswers,
+                        { question: initialQuestions[currentQuestionIndex], answer: inputValue }
+                    ]);
+                    setTimeout(askNextQuestion, 500);
+                }
             } else {
                 setIsLoading(true);
                 setTimeout(() => {
@@ -110,15 +116,21 @@ export default function ChatWidget() {
         setInputValue(event.target.value);
     };
 
-    useEffect(() => {
-        setTimeout(askNextQuestion, 1000);
-    }, []);
-
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault(); // Prevents adding a new line
-            handleClick(); // Sends the message
+            event.preventDefault();
+            handleClick();
         }
+    };
+
+    const handleNewChat = () => {
+        setMessages([]);
+        setInputValue('');
+        setCurrentQuestionIndex(-1);
+        setIsQuestionnaireDone(false);
+        setQuestionnaireAnswers([]);
+        setIsLoading(false);
+        setHasStartedQuestionnaire(false);
     };
 
     return (
@@ -127,8 +139,7 @@ export default function ChatWidget() {
                 <h1 className="text-xl font-semibold">Chat with Chance ✨</h1>
                 <p>Ask any question for Chance to Answer</p>
                 <div className="flex gap-2 items-center pt-2">
-                    <Button variant="secondary">New Chat</Button>
-                    <Button variant="secondary">See FAQ</Button>
+                    <Button variant="secondary" onClick={handleNewChat}>New Chat</Button>
                 </div>
             </ExpandableChatHeader>
             <ExpandableChatBody>
@@ -144,10 +155,10 @@ export default function ChatWidget() {
                             />
                             <ChatBubbleMessage>
                                 {message.text}
+
                             </ChatBubbleMessage>
                         </ChatBubble>
                     ))}
-                    {/* Display loading indicator when bot is typing */}
                     {isLoading && (
                         <ChatBubble variant="received">
                             <ChatBubbleAvatar src={BotAvatar} fallback="Bot" />
@@ -156,7 +167,6 @@ export default function ChatWidget() {
                             </ChatBubbleMessage>
                         </ChatBubble>
                     )}
-                    {/* Add a div at the end to serve as a scroll target */}
                     <div ref={messagesEndRef} />
                 </ChatMessageList>
             </ExpandableChatBody>
