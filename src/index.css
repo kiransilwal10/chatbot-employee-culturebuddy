@@ -1,3 +1,67 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  /* Hide the scrollbar in Firefox */
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+
+  /* Style the track (optional) */
+  scrollbar-track-color: transparent;
+}
+
+main {
+  height: calc(100dvh - 110px)
+}
+
+/* Hide the vertical scrollbar */
+::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Hide the horizontal scrollbar (if needed) */
+::-webkit-scrollbar-thumb:horizontal {
+  width: 0;
+}
+
+/* Style the track (optional) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.form-control::placeholder {
+  color: rgba(250, 250, 250, 0.6)
+}
+
+h1 {
+  text-align: center;
+}
+
+.icon-btn {
+  cursor: pointer;
+  margin-top: 0.4em;
+}
+
+.icon-btn:hover {
+  color: rgba(250, 250, 250, 0.6)
+}
+
+.footer-icon-link {
+  color: rgb(128, 128, 128)
+}
+
+.footer-icon-link:hover {
+  color: rgb(193, 192, 192)
+}
+
+.custom-pre {
+  white-space: pre-wrap;
+}
+
+.custom-pre a {
+  word-wrap: break-word;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

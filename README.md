@@ -1,50 +1,27 @@
-# React + TypeScript + Vite
+# Realtime Chat App (PWA) built with React, TypeScript, Bootstrap & Firebase
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This app allows you to **sign in/up with Google account** and start a chat with registered users from the users list for **free**.
 
-Currently, two official plugins are available:
+You are able to see users' & interlocutors' **online status**, when they were **last seen** & **last seen message**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+You will also get a **visual & sound notification** about new/ unseen messages.
 
-## Expanding the ESLint configuration
+You can send **multiline messages** & add **clickable links** to your messages, which will be opened in a different tab.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+The **app can be** optionally **added to the** desktop or phone **screen** & will notify you about updates after reloading the app or closing the tab.
 
-- Configure the top-level `parserOptions` property like this:
+The app is deployed on Vercel & available <a href="https://vg-chat-app-react.vercel.app/" target="_blank">here</a>.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Enjoy & invite your friends!
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+PS. If you don't know any user of the app, feel free to start the chat with me (Vadim Gierko) to test the app & talk to the creator 😉
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Tech Stack
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- **React 18.2.0** (I've used CRA PWA TS template to init this project)
+- **React Router 6.16**
+- **TypeScript 4.9.5**
+- **Firebase 10.5.0**
+- **Bootstrap 5.3.2**
+- **React Bootstrap 2.9.0**
+- **React Icons 4.11.0**
