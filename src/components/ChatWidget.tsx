@@ -17,7 +17,6 @@ import { Send } from "lucide-react";
 import BotAvatar from '@/assets/chatbot.jpg';
 import UserAvatar from '@/assets/user.jpg';
 import MessageLoading from "@/components/ui/chat/message-loading.tsx";
-import InviteCards from "@/components/InviteCard.tsx";
 
 interface Message {
     text: string;
@@ -138,9 +137,6 @@ export default function ChatWidget() {
             <ExpandableChatHeader className="flex-col text-center justify-center">
                 <h1 className="text-xl font-semibold">Chat with Chance ✨</h1>
                 <p>Ask any question for Chance to Answer</p>
-                <div className="flex gap-2 items-center pt-2">
-                    <Button variant="secondary" onClick={handleNewChat}>New Chat</Button>
-                </div>
             </ExpandableChatHeader>
             <ExpandableChatBody>
                 <ChatMessageList>
