@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Calendar } from './ui/calendar'
 import ChatWidget from './ChatWidget'
+
 type Message = {
     id: number
     text: string
@@ -135,11 +137,11 @@ export default function ChatApp() {
     return (
         <>
             <h1 className="text-3xl font-semibold text-center mb-8">Company Internal Chat</h1>
-            <div className="flex w-screen max-w-[1000px] max-h-[570px] mx-auto border rounded-lg overflow-hidden">
+            <div className="flex w-screen max-w-[1000px] max-h-[570px] mx-auto border-2 border-gray-400 rounded-lg overflow-hidden">
 
-                {/* Contacts Panel */}
-                <div className="w-1/3 bg-background border-r">
-                    <div className="p-4 border-b">
+                {/* Contacts Panel (Left) */}
+                <div className="w-1/4 bg-background border-r-2 border-gray-400">
+                    <div className="p-4 border-b-2 border-gray-600">
                         <h2 className="text-xl font-semibold">Chats</h2>
                     </div>
                     <ScrollArea className="h-[calc(100vh-5rem)]">
@@ -162,11 +164,11 @@ export default function ChatApp() {
                     </ScrollArea>
                 </div>
 
-                {/* Chat Area */}
+                {/* Chat Area (Center) */}
                 <div className="flex-1 flex flex-col">
                     {activeContact ? (
                         <>
-                            <header className="p-4 border-b bg-background">
+                            <header className="p-4 border-b-2 border-gray-400 bg-background">
                                 <h2 className="text-xl font-semibold">{activeContact.name}</h2>
                             </header>
                             <ScrollArea className="flex-1 p-4">
@@ -196,30 +198,30 @@ export default function ChatApp() {
                                 ))}
 
                             </ScrollArea>
-                            <div className="p-4 border-t">
-                                <div className="flex space-x-2">
-                                    <Input
-                                        type="text"
-                                        value={inputMessage}
-                                        onChange={(e) => setInputMessage(e.target.value)}
-                                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                        placeholder="Type a message"
-                                    />
-                                    <Button onClick={handleSendMessage}>Send</Button>
-                                </div>
+                            <div className="p-4 border-t-2 border-gray-400 flex flex-row">
+                                <Input
+                                    placeholder="Type a message"
+                                    value={inputMessage}
+                                    onChange={(e) => setInputMessage(e.target.value)}
+                                    className="mb-2 mr-2"
+                                />
+                                <Button onClick={handleSendMessage}>Send</Button>
                             </div>
                         </>
                     ) : (
-                        <div className="flex items-center justify-center flex-1">
-                            <p className="text-muted-foreground">Select a contact to start chatting</p>
+                        <div className="flex-1 flex justify-center items-center text-muted-foreground">
+                            Select a contact to start chatting.
                         </div>
                     )}
                 </div>
-            </div>
 
-            {/* ChatWidget positioned at the bottom right */}
-            <div className="fixed bottom-4 right-4 z-10">
-                <ChatWidget />
+                {/* Calendar Panel (Right) */}
+                <div className="w-1/4 bg-background border-l-2 border-gray-400">
+                    <Calendar />
+                </div>
+                <div>   
+                    <ChatWidget/>
+                </div>
             </div>
         </>
     )
