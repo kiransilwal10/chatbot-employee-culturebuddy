@@ -17,6 +17,7 @@ import { Send } from "lucide-react";
 import BotAvatar from '@/assets/chatbot.jpg';
 import CommonInterest from "@/components/CommonInterest.tsx";
 import MessageLoading from "@/components/ui/chat/message-loading.tsx";
+import BirthdayWish from "@/components/BirthdayWish.tsx";
 
 let userName = "John Doe";
 let userPic = "";
@@ -53,7 +54,7 @@ export default function ChatWidget() {
         interest: string
     } | null>(null);
 
-
+    const [shouldRenderBirthdayWish, setShouldRenderBirthdayWish] = useState<boolean>(Math.random() < 1);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -303,6 +304,13 @@ export default function ChatWidget() {
         setIsLoading(false);
         setHasStartedQuestionnaire(false);
     };
+    const handleCloseBirthdayWish = () => {
+        setShouldRenderBirthdayWish(false);
+    };
+
+    const handleCloseCommonInterest = () => {
+        setCommonInterestMatch(null);
+    };
 
     return (
         <ExpandableChat size="lg" position="bottom-right">
@@ -334,12 +342,24 @@ export default function ChatWidget() {
                     )}
                     <div ref={messagesEndRef}/>
                 </ChatMessageList>
+
                 {/* Conditionally render CommonInterest */}
                 {commonInterestMatch && (
                     <CommonInterest
                         user1={commonInterestMatch.user1}
                         user2={commonInterestMatch.user2}
                         interest={commonInterestMatch.interest}
+                        onClose={handleCloseCommonInterest}
+                    />
+                )}
+
+                {/* Conditionally render BirthdayWish with 1/3 probability */}
+                {shouldRenderBirthdayWish && (
+                    <BirthdayWish
+                        userName="Alex"
+                        // or dynamically provide the name
+                        onSendWish={() => alert("Birthday wish sent!")}
+                        onClose={handleCloseBirthdayWish}
                     />
                 )}
             </ExpandableChatBody>

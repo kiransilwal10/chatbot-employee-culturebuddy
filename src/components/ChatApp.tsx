@@ -173,6 +173,9 @@ export default function ChatApp() {
     const handleContactClick = (contact: Contact) => {
         setActiveContact(contact)
     }
+    // Generate a random number for 1/3 chance
+
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100 p-6">
