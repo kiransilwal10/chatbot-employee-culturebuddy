@@ -18,6 +18,7 @@ import BotAvatar from '@/assets/chatbot.jpg';
 import UserAvatar from '@/assets/user.jpg';
 import MessageLoading from "@/components/ui/chat/message-loading.tsx";
 
+
 interface Message {
     text: string;
     sender: 'user' | 'bot';

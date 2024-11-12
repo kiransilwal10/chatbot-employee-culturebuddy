@@ -40,7 +40,7 @@ interface ExpandableChatProps extends React.HTMLAttributes<HTMLDivElement> {
 const ExpandableChat: React.FC<ExpandableChatProps> = ({
   className,
   position = "bottom-right",
-  size = "md",
+  size = "sm",
   icon,
   children,
   ...props
