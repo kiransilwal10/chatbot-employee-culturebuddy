@@ -1,29 +1,56 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './ui/firebaseConfig';
+import { gapi } from 'gapi-script'; 
 
 export default function GoogleLoginPage() {
   const navigate = useNavigate();
   const [useGoogleSignIn, setUseGoogleSignIn] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
+  // Load Google API client on component mount
+  useEffect(() => {
+    const loadGapiClient = () => {
+      gapi.load('client:auth2', () => {
+        gapi.client.init({
+          apiKey: 'AIzaSyBi7B73JeNOJqd-5tx8nEVw9YIWu1CeNu4',  // Replace with your actual API key
+          clientId: '1041243581594-ha6qrorlov1qemku6nfj5ofhssvji1r1.apps.googleusercontent.com',  // Replace with your client ID
+          scope: 'https://www.googleapis.com/auth/calendar.readonly',
+          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+        });
+      });
+    };
+    loadGapiClient();
+  }, []);
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const checkResponse = await fetch('http://localhost:3000/api/users/check', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user.email }),
+    });
+      
       const userData = {
         email: user.email,
         name: user.displayName,
+        isUser: checkResponse.ok
     };
     sessionStorage.setItem('emailData', JSON.stringify(userData));
       console.log('Google sign-in successful', user);
+
       
+
       // After sign-in, authenticate with the Google API
       gapi.auth2.getAuthInstance().signIn().then(() => {
         console.log('Google email-in successful', user);

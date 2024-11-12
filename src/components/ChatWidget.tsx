@@ -130,17 +130,7 @@ export default function ChatWidget() {
             const storedUser = sessionStorage.getItem('emailData');
                 const user = JSON.parse(storedUser as string);
             setMessages([...messages, { text: inputValue, sender: 'user' }]);
-            const checkResponse = await fetch('http://localhost:3000/api/users/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: user.email }),
-            });
-
-    
-            isQuestionnaireDone = checkResponse.ok;
- 
+            isQuestionnaireDone = user.isUser;
 
             if (!isQuestionnaireDone) {
                 if (!hasStartedQuestionnaire) {
