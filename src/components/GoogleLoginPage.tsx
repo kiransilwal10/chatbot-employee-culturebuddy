@@ -34,44 +34,70 @@ export default function GoogleLoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const userData = {
+        email: user.email,
+        name: user.displayName,
+    };
+    sessionStorage.setItem('emailData', JSON.stringify(userData));
       console.log('Google sign-in successful', user);
       
       // After sign-in, authenticate with the Google API
       gapi.auth2.getAuthInstance().signIn().then(() => {
+        console.log('Google email-in successful', user);
         fetchGoogleCalendarEvents();  // Fetch calendar events after successful sign-in
       });
       navigate('/calendar');  // Redirect to calendar page
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      setError("Failed to sign in with Google");
     }
   };
 
+  interface EventAttendee {
+    email: string;
+  }
+  
+  interface CalendarEvent {
+    summary: string;
+    start: {
+      dateTime?: string;
+      date?: string;
+    };
+    end: {
+      dateTime?: string;
+      date?: string;
+    };
+    attendees?: EventAttendee[];
+    htmlLink?: string;
+  }
+
   const fetchGoogleCalendarEvents = async () => {
-    try {
+    const timeMin = new Date();
+      const timeMax = new Date(timeMin);
+      timeMax.setDate(timeMax.getDate() + 7);  // Set time range to the next week
+
       const response = await gapi.client.calendar.events.list({
         calendarId: 'primary',
-        timeMin: new Date().toISOString(),
+        timeMin: timeMin.toISOString(),
+        timeMax: timeMax.toISOString(),
         showDeleted: false,
         singleEvents: true,
         orderBy: 'startTime',
       });
-      setEvents(response.result.items);  // Set calendar events in state
-    } catch (error) {
-      console.error("Error fetching Google Calendar events:", error);
-      setError("Failed to fetch calendar events");
-    }
-  };
 
-  const handleEmailSignIn = async (e) => {
-    e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/chat');
-    } catch (error) {
-      console.error("Error signing in with email:", error);
-      setError("Invalid email or password");
-    }
+      const upcomingEvents: CalendarEvent[] = response.result.items;
+
+      const combinedEventDetails = upcomingEvents.map(event => {
+        const attendeesList = event.attendees ? event.attendees.map(attendee => attendee.email).join(", ") : "No attendees";
+        const startTime = event.start.dateTime ? new Date(event.start.dateTime).toLocaleString() : "No start time";
+        const endTime = event.end.dateTime ? new Date(event.end.dateTime).toLocaleString() : "No end time";
+        const htmlLink = event.htmlLink || "No link";
+        const summary = event.summary || "No summary";
+  
+        // Combine all these pieces into one string
+        return `Summary: ${summary}\nStart: ${startTime}\nEnd: ${endTime}\nAttendees: ${attendeesList}\nLink: ${htmlLink}\n\n`;
+      }).join("\n");
+      console.log(combinedEventDetails);
+      sessionStorage.setItem('calenderData', JSON.stringify(combinedEventDetails));
   };
 
   return (

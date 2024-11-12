@@ -125,8 +125,48 @@ export default function ChatApp() {
                     ]
                 })
             }, 1000)
+            const storedUser = sessionStorage.getItem('emailData');
+            const user = JSON.parse(storedUser as string);
+            saveChatMessage(user.name,inputMessage.trim(),activeContact.name);
+
+            
         }
     }
+
+    const saveChatMessage = async (userId: string, message: string, receiver: string) => {
+        const apiUrl = 'http://localhost:3000/api/companies/chat';  // Replace with your actual backend URL
+      
+        const body = {
+          userId,
+          message,
+          receiver,
+          time: new Date().toISOString(), // Optional: if you want to send the timestamp
+        };
+      
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error saving chat message:', errorData.error);
+            throw new Error(errorData.error);
+          }
+      
+          const responseData = await response.json();
+          console.log('Success:', responseData.message);
+          return responseData;  // Optionally, handle the response data as needed
+        } catch (error) {
+          console.error('Error calling saveChatMessage API:', error);
+          throw error;  // Propagate the error for further handling
+        }
+      };
+      
 
     const handleContactClick = (contact: Contact) => {
         setActiveContact(contact)
