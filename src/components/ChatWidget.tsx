@@ -19,7 +19,7 @@ import UserAvatar from '@/assets/user.jpg';
 import MessageLoading from "@/components/ui/chat/message-loading.tsx";
 
 let userName = "John Doe";
-
+let userPic = "";
 interface Message {
    text: string;
    sender: 'user' | 'bot';
@@ -61,6 +61,8 @@ export default function ChatWidget() {
    useEffect(() => {
     const storedUser = sessionStorage.getItem('emailData');
     const user = JSON.parse(storedUser as string);
+    userPic = user.pic;
+    userName = user.name;
     if( user.isUser){
         setMessages([]);
         setIsQuestionnaireDone(true);
@@ -297,7 +299,7 @@ export default function ChatWidget() {
                            variant={message.sender === 'user' ? 'sent' : 'received'}
                        >
                            <ChatBubbleAvatar
-                               src={message.sender === 'user' ? UserAvatar : BotAvatar}
+                               src={message.sender === 'user' ? userPic  : BotAvatar}
                                fallback={message.sender === 'user' ? 'User' : 'Bot'}
                            />
                            <ChatBubbleMessage>

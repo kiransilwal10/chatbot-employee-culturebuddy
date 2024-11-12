@@ -44,6 +44,7 @@ export default function GoogleLoginPage() {
       const userData = {
         email: user.email,
         name: user.displayName,
+        pic:user.photoURL,
         isUser: checkResponse.ok
     };
     sessionStorage.setItem('emailData', JSON.stringify(userData));
