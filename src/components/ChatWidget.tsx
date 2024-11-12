@@ -41,7 +41,7 @@ const initialQuestions = [
 const welcomeMessage = "Hey there! 👋 I'm so excited to chat with you! Before we dive in, I'd love to get to know you a bit better. Mind if I ask a few quick questions?";
 
 export default function ChatWidget() {
-    const [messages, setMessages] = useState<Message[]>([{text: welcomeMessage, sender: 'bot'}]);
+    const [messages, setMessages] = useState<Message[]>([{ text: welcomeMessage, sender: 'bot' }]);
     const [inputValue, setInputValue] = useState<string>('');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(-1);
     const [isQuestionnaireDone, setIsQuestionnaireDone] = useState<boolean>(false);
@@ -54,11 +54,11 @@ export default function ChatWidget() {
         interest: string
     } | null>(null);
 
-    const [shouldRenderBirthdayWish, setShouldRenderBirthdayWish] = useState<boolean>(Math.random() < 1);
+    const [shouldRenderBirthdayWish, setShouldRenderBirthdayWish] = useState<boolean>(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
@@ -76,7 +76,10 @@ export default function ChatWidget() {
         }
     }, []);
 
-
+    // Set the birthday wish to render with 1/10 probability only once on mount
+    useEffect(() => {
+        setShouldRenderBirthdayWish(Math.random() < 1 / 10);
+    }, []);
     const askNextQuestion = () => {
         const nextIndex = currentQuestionIndex + 1;
         if (nextIndex < initialQuestions.length) {

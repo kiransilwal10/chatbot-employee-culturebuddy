@@ -28,7 +28,7 @@ type Chat = {
 }
 
 const initialContacts: Contact[] = [
-    { id: 1, name: "Alice", avatar: "/placeholder.svg?height=32&width=32", lastMessage: "Hey there!" },
+    { id: 1, name: "Alex", avatar: "/placeholder.svg?height=32&width=32", lastMessage: "Hey there!" },
     { id: 2, name: "Bob", avatar: "/placeholder.svg?height=32&width=32", lastMessage: "How's it going?" },
     { id: 3, name: "Charlie", avatar: "/placeholder.svg?height=32&width=32", lastMessage: "See you later!" },
     { id: 4, name: "David", avatar: "/placeholder.svg?height=32&width=32", lastMessage: "Good morning!" },
@@ -44,7 +44,7 @@ const initialChats: Chat[] = [
     {
         contactId: 1,
         messages: [
-            { id: 1, text: "Hi Alice! How was the meeting?", sender: 'user' },
+            { id: 1, text: "Hi Alex! How was the meeting?", sender: 'user' },
             { id: 2, text: "It went great! We discussed the new project plans.", sender: 'contact' },
             { id: 3, text: "That's awesome. Also, happy early birthday!", sender: 'user' },
             { id: 4, text: "Thank you! Let's celebrate soon.", sender: 'contact' },
