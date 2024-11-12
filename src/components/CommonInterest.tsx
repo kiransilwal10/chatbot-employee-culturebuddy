@@ -44,7 +44,6 @@ export default function CommonInterest({
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                     >
-                        <Heart className="w-8 h-8 text-red-500" />
                     </motion.div>
                     <p className="text-center text-lg font-medium text-gray-800 dark:text-gray-200">
                         Great news! {user1} and {user2} both enjoy <span className="font-bold text-purple-600 dark:text-purple-400">{interest}</span>!
