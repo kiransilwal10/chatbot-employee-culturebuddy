@@ -107,7 +107,7 @@ export default function GoogleLoginPage() {
         return `Summary: ${summary}\nStart: ${startTime}\nEnd: ${endTime}\nAttendees: ${attendeesList}\nLink: ${htmlLink}\n\n`;
       }).join("\n");
       console.log(combinedEventDetails);
-      sessionStorage.setItem('calenderData', JSON.stringify(combinedEventDetails));
+      sessionStorage.setItem('calendarData', JSON.stringify(combinedEventDetails));
   };
 
   return (
@@ -171,3 +171,4 @@ export default function GoogleLoginPage() {
     </div>
   );
 }
+
