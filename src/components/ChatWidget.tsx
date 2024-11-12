@@ -41,7 +41,7 @@ export default function ChatWidget() {
     const [messages, setMessages] = useState<Message[]>([{ text: welcomeMessage, sender: 'bot' }]);
     const [inputValue, setInputValue] = useState<string>('');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(-1);
-    const [isQuestionnaireDone, setIsQuestionnaireDone] = useState<boolean>(false);
+    var [isQuestionnaireDone, setIsQuestionnaireDone] = useState<boolean>(false);
     const [questionnaireAnswers, setQuestionnaireAnswers] = useState<QuestionnaireAnswer[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [hasStartedQuestionnaire, setHasStartedQuestionnaire] = useState<boolean>(false);
@@ -78,13 +78,59 @@ export default function ChatWidget() {
                 setIsQuestionnaireDone(true);
                 setIsLoading(false);
                 console.log("Questionnaire Answers:", questionnaireAnswers);
+                const questionnaireAnswersString = questionnaireAnswers
+                    .map(answer => `${answer.question}: ${answer.answer}`)
+                    .join("\n");
+
+                const storedUser = sessionStorage.getItem('emailData');
+                const user = JSON.parse(storedUser as string);
+                const storedCalendar= sessionStorage.getItem('calenderData');
+                const calendar = JSON.parse(storedCalendar as string);
+                
+                saveUser(user.name,user.email,questionnaireAnswersString,calendar)
             }, 1000);
         }
     };
 
-    const handleClick = () => {
+    const saveUser = async (name:string, email:string ,about:string ,calendar:string) => {
+        const userData = {
+            name,       // Variable passed to function
+            email,      // Variable passed to function
+            about,      // Variable passed to function
+            calendar    // Variable passed to function
+          };
+        const url = 'http://localhost:3000/api/users/save'; // Replace with your actual URL
+      
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Failed to save user: ${errorData.error}`);
+          }
+      
+          const responseData = await response.json();
+          console.log('User saved successfully:', responseData);
+          return responseData; // Return the response data for further use
+        } catch (error) {
+          console.error('Error calling saveUser API:', error);
+          throw error; // Re-throw to handle the error in the calling code
+        }
+      };
+      
+
+    const  handleClick = async() => {
         if (inputValue.trim()) {
+            const storedUser = sessionStorage.getItem('emailData');
+                const user = JSON.parse(storedUser as string);
             setMessages([...messages, { text: inputValue, sender: 'user' }]);
+            isQuestionnaireDone = user.isUser;
 
             if (!isQuestionnaireDone) {
                 if (!hasStartedQuestionnaire) {
